@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">Demo2Tutorial / ShowHow logo</title>
+  <desc id="desc">Wordmark logo for Demo2Tutorial with ShowHow subtitle.</desc>
+  <rect width="1600" height="520" fill="#f7f3ed"/>
+  <text x="800" y="215" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="138" fill="#1a1612" letter-spacing="-2">
+    Demo
+    <tspan fill="#c4432a">2</tspan>
+    Tutorial
+  </text>
+  <text x="800" y="332" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="78" fill="#1a1612" letter-spacing="-1">
+    Show
+    <tspan fill="#c4432a" font-style="italic">How</tspan>
+  </text>
+  <text x="800" y="405" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="26" fill="#c4b9a8" letter-spacing="7">
+    RECORD — GENERATE — SHARE
+  </text>
+</svg>

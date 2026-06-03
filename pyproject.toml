@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "showhow"
+version = "0.1.0"
+description = "Lightweight tool for turning desktop demonstrations into step-by-step multimodal tutorials."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Show Lab, National University of Singapore" }
+]
+keywords = ["tutorial", "desktop", "screen-recording", "computer-use", "gui"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Web Environment",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Multimedia :: Video",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: User Interfaces",
+]
+dependencies = [
+  "fastapi>=0.110,<1",
+  "uvicorn>=0.30,<1",
+  "pynput>=1.7,<2",
+  "opencv-python>=4.9,<5",
+  "openai>=1.30,<2",
+  "networkx>=3.2,<4",
+  "numpy>=1.26,<3",
+  "Pillow>=10,<12",
+  "pydantic>=2.7,<3",
+  "imageio-ffmpeg>=0.5,<1",
+  "tqdm>=4.66,<5",
+  "pyobjc-framework-ApplicationServices>=10; sys_platform == 'darwin'",
+  "pyobjc-framework-Cocoa>=10; sys_platform == 'darwin'",
+  "pyobjc-framework-Quartz>=10; sys_platform == 'darwin'",
+]
+
+[project.optional-dependencies]
+mcp = [
+  "mcp>=1.9,<2",
+]
+windows = [
+  "uiautomation>=2.0; sys_platform == 'win32'",
+]
+sam2 = [
+  "torch>=2.3,<3",
+  "sam2",
+]
+
+[project.urls]
+Homepage = "https://github.com/showlab/Demo2Tutorial"
+Repository = "https://github.com/showlab/Demo2Tutorial"
+
+[project.scripts]
+showhow = "showhow.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE"]
+
+[tool.setuptools.package-data]
+"showhow.tutorial_generator" = ["*.txt"]
+
+[tool.setuptools.packages.find]
+include = ["showhow*"]

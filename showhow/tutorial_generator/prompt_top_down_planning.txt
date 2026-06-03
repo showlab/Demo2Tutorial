@@ -1,0 +1,78 @@
+You are an expert assistant transforming GUI action sequences into a tutorial for humans. Identify the ultimate goal of these actions, which will be the objective of the tutorial. Extract only the useful steps, for the trivial ones just skip them. Group actions into hierarchical subtasks.
+
+INPUTS (do not echo these; use to build your output):
+  steps: a JSON array of objects, each with:
+  * action_id (int): step idx
+  * state_before (string): UI state pre-action
+  * state_after (string): UI state post-action
+  * action_desc (string): User action description
+  * t_start (float): Action start time
+  * t_end (float): Action end time
+    (Assumption: Actions are discrete, non-overlapping.)
+  *raw_action*: the actual keyboard/mouse action
+
+It is crucial to filter away those miscellaneous steps and vague description, such as waiting / click some blank space / , only keep those essential steps you'll see in a concise tutorial. Futhermore, provide description in instructio tone for the selected actions.
+
+In order to enhance readability, you may merge too-fine actions. For example, if an action is to press Enter to confirm the values typed in the previous step, you can merge it into the action above. Note that t_end should extend accordingly.
+
+Granularity rules:
+- Merge consecutive actions only when they are part of one local interaction and happen in the same UI region.
+- A good tutorial step should usually have one primary visual focus and one main target area on the screen.
+- If a later action requires the user to look at a different screen region, make it a new tutorial step.
+- Prefer merging actions like opening a nearby menu and immediately selecting an item from that same local area.
+- Do not merge a local opening/navigation action with a later selection in a distant sidebar, panel, or window region.
+- When unsure, prefer slightly finer-grained steps over overly merged steps.
+
+OUTPUT FORMAT:
+
+{
+    "tutorial_goal": the goal you summarized. eg: How to create a luma matte effect in PR.
+    "chapters":
+    [
+    {
+        "chapter_title": briefly describe what is done in this group. eg: Apply the effect on the radio.
+        "actions":
+        [
+            {
+            "original_id": the original action_id. can be a list of consecutive integers if merged.
+            "instruction": write an instruction like it's in a tutorial. eg: click the "Effects" drop down to select the luma matte effect.
+            t_start (float): Action start time
+            t_end (float): Action end time
+	   raw_action: the original action keep the original structure. can be a list of consecutive actions if merged.
+            },
+            {
+            "original_id": the original action_id. can be a list of consecutive integers if merged.
+            "instruction": write an instruction like it's in a tutorial. eg: click the "Effects" drop down to select the luma matte effect.
+            t_start (float): Action start time
+            t_end (float): Action end time
+	    raw_action: the original action keep the original structure. can be a list of consecutive actions if merged.
+            },            
+            ....
+        
+        ]
+    },
+    {
+        "chapter_title": briefly describe what is done in this group. eg: Apply the effect on the radio.
+        "actions":
+        [
+            {
+            "original_id": the original action_id. can be a list of consecutive integers if merged.
+            "instruction": write an instruction like it's in a tutorial. eg: click the "Effects" drop down to select the luma matte effect.
+            t_start (float): Action start time
+            t_end (float): Action end time
+           raw_action: the original action. keep the original structure. can be a list of consecutive actions if merged. 
+            },
+            {
+            "original_id": the original action_id. can be a list of consecutive integers if merged.
+            "instruction": write an instruction like it's in a tutorial. eg: click the "Effects" drop down to select the luma matte effect.
+            t_start (float): Action start time
+            t_end (float): Action end time
+           raw_action: the original action keep the original structure. can be a list of consecutive actions if merged.
+            },            
+            ....
+        
+        ]
+    },
+    ....
+    ]
+}

@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local generated outputs
+reference/
+docs/
+tests/
+showhow/**/tutorial_img_out/
+showhow/**/tut_draft/
+
+# Local editor files
+.vscode/
+.idea/
+.obsidian/
+
+# Local credentials / config
+.pypirc
