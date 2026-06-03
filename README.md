@@ -7,8 +7,14 @@
 </p>
 
 <p align="center">
-  Zechen Bai, Zhiheng Chen, Yiqi Lin, Kevin Qinghong Lin,<br>
-  Difei Gao, Xiangwu Guo, Xin Wang, Mike Zheng Shou
+  <a href="https://www.baizechen.site/">Zechen Bai</a>,
+  <a href="https://www.linkedin.com/in/zhiheng-chen-445811346/">Zhiheng Chen</a>,
+  <a href="https://scholar.google.com/citations?user=kmo7VRQAAAAJ&hl=zh-CN">Yiqi Lin</a>,
+  <a href="https://qhlin.me/">Kevin Qinghong Lin</a>,<br>
+  <a href="https://scholar.google.com/citations?user=No9OsocAAAAJ&hl=en">Difei Gao</a>,
+  <a href="https://scholar.google.com/citations?user=3fWclEIAAAAJ&hl=zh-CN">Xiangwu Guo</a>,
+  Xin Wang,
+  <a href="https://scholar.google.com/citations?user=h1-3lSoAAAAJ&hl=zh-CN">Mike Zheng Shou</a>
 </p>
 
 <p align="center">
@@ -16,10 +22,10 @@
 </p>
 
 <p align="center">
-  <img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv-b31b1b?style=flat-square">
-  <img alt="PyPI" src="https://img.shields.io/badge/PyPI-showhow-3775A9?style=flat-square&logo=pypi&logoColor=white">
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-2ea44f?style=flat-square">
-  <img alt="Platform" src="https://img.shields.io/badge/Platform-macOS-111111?style=flat-square&logo=apple&logoColor=white">
+  <a href="https://arxiv.org/abs/2606.03951"><img alt="Paper" src="https://img.shields.io/badge/Paper-arXiv-b31b1b?style=flat-square"></a>
+  <a href="https://pypi.org/project/showhow/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-showhow-3775A9?style=flat-square&logo=pypi&logoColor=white"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-2ea44f?style=flat-square"></a>
+  <a href="#setup"><img alt="Platform" src="https://img.shields.io/badge/Platform-macOS-111111?style=flat-square&logo=apple&logoColor=white"></a>
 </p>
 
 <p align="center">
@@ -37,6 +43,10 @@
 ## Overview
 
 Raw screen recordings are useful demonstrations, but they are often long, passive, and difficult to follow. `ShowHow` turns a recorded desktop workflow into a structured tutorial with concise instructions, selected keyframes, and visual guidance.
+
+<p align="center">
+  <img src="assets/teaser.png" alt="Demo2Tutorial teaser figure" width="72%">
+</p>
 
 This repository keeps the paper-facing identity as **Demo2Tutorial**, while the public software tool and package are named **ShowHow**:
 
