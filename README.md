@@ -13,7 +13,7 @@
   <a href="https://qhlin.me/">Kevin Qinghong Lin</a>,<br>
   <a href="https://scholar.google.com/citations?user=No9OsocAAAAJ&hl=en">Difei Gao</a>,
   <a href="https://scholar.google.com/citations?user=3fWclEIAAAAJ&hl=zh-CN">Xiangwu Guo</a>,
-  Xin Wang,
+  <a href="https://www.linkedin.com/in/xin-wang-13164b268/">Xin Wang</a>,
   <a href="https://scholar.google.com/citations?user=h1-3lSoAAAAJ&hl=zh-CN">Mike Zheng Shou</a>
 </p>
 
