@@ -82,6 +82,15 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
             ch_i = step.get("chapter_index", 1)
             st_i = step.get("step_index", 1)
             step_id = f"{ch_i}-{st_i}"
+            meta = step.get("highlight_metadata") or {}
+            focus_points = []
+            for point in (meta.get("clicks") or []) + (meta.get("drag") or []):
+                try:
+                    x = float(point.get("x"))
+                    y = float(point.get("y"))
+                    focus_points.append((x, y))
+                except Exception:
+                    pass
 
             # default main image (middle candidate or image_path)
             main_src = ""
@@ -102,9 +111,22 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
 
             img_tag = ""
             if main_src:
+                mag_html = ""
+                if focus_points:
+                    mag_x, mag_y = focus_points[0]
+                    mag_html = (
+                        f'<div class="magnifier" data-x="{mag_x:.2f}" data-y="{mag_y:.2f}"></div>'
+                    )
                 img_tag = (
+                    f'<div class="image-stage" data-step-id="{step_id}">'
                     f'<img src="{main_src}" alt="Step {ch_i}.{st_i}" '
                     f'class="step-img step-main-img" id="main-{step_id}">'
+                    f'{mag_html}'
+                    f'</div>'
+                    f'<div class="image-tools">'
+                    f'<button type="button" onclick="addMagnifier(\'{step_id}\')">Add magnifier</button>'
+                    f'<button type="button" onclick="removeMagnifier(\'{step_id}\')">Remove magnifier</button>'
+                    f'</div>'
                 )
 
             # filmstrip (only if more than one candidate)
@@ -334,11 +356,53 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
     .step-img {{
       display: block;
       width: 100%;
-      margin-top: 1rem;
       border-radius: 2px;
       box-shadow: 0 4px 20px rgba(26,22,18,0.09);
       border: 1px solid var(--sand);
     }}
+    .image-stage {{
+      position: relative;
+      margin-top: 1rem;
+      overflow: hidden;
+      border-radius: 2px;
+      touch-action: none;
+    }}
+    .magnifier {{
+      position: absolute;
+      left: 62%;
+      top: 42%;
+      width: 168px;
+      height: 168px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.92);
+      box-shadow: 0 8px 28px rgba(26,22,18,0.32), inset 0 0 0 1px rgba(26,22,18,0.18);
+      cursor: grab;
+      transform: translate(-50%, -50%);
+      background-repeat: no-repeat;
+      background-size: auto;
+      z-index: 3;
+    }}
+    .magnifier:active {{ cursor: grabbing; }}
+    .image-tools {{
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.45rem;
+      margin-top: 0.45rem;
+    }}
+    .image-tools button {{
+      background: var(--warm-white);
+      color: var(--ink-faded);
+      border: 1px solid var(--sand);
+      border-radius: 100px;
+      padding: 0.32rem 0.7rem;
+      font-size: 0.62rem;
+      font-family: inherit;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }}
+    .image-tools button:hover {{ border-color: var(--vermillion); color: var(--vermillion); }}
 
     .filmstrip {{
       display: flex;
@@ -382,6 +446,8 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
     @media print {{
       .toolbar {{ display: none; }}
       .filmstrip {{ display: none; }}
+      .image-tools {{ display: none; }}
+      .magnifier {{ box-shadow: inset 0 0 0 1px rgba(26,22,18,0.18); }}
       body {{ background: #fff; }}
       .doc {{ margin: 0; padding: 1cm 1.5cm; max-width: none; }}
       .step {{ box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }}
@@ -403,12 +469,113 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
   </div>
 
   <script>
+    const MAGNIFIER_ZOOM = 1.8;
+
     function selectFrame(stepId, thumbEl, src) {{
       const main = document.getElementById('main-' + stepId);
       if (main) main.src = src;
+      const stage = main ? main.closest('.image-stage') : null;
+      if (stage) updateMagnifier(stage);
       const film = document.getElementById('film-' + stepId);
       if (film) film.querySelectorAll('.filmstrip-thumb').forEach(t => t.classList.remove('active'));
       thumbEl.classList.add('active');
+    }}
+
+    function ensureMagnifier(stage, x, y) {{
+      let mag = stage.querySelector('.magnifier');
+      if (!mag) {{
+        mag = document.createElement('div');
+        mag.className = 'magnifier';
+        stage.appendChild(mag);
+      }}
+      mag.dataset.x = String(x);
+      mag.dataset.y = String(y);
+      bindMagnifier(stage, mag);
+      updateMagnifier(stage);
+      return mag;
+    }}
+
+    function addMagnifier(stepId) {{
+      const stage = document.querySelector('.image-stage[data-step-id="' + stepId + '"]');
+      if (!stage) return;
+      const img = stage.querySelector('.step-main-img');
+      const iw = img ? (img.naturalWidth || img.clientWidth || 1) : 1;
+      const ih = img ? (img.naturalHeight || img.clientHeight || 1) : 1;
+      ensureMagnifier(stage, iw / 2, ih / 2);
+    }}
+
+    function removeMagnifier(stepId) {{
+      const stage = document.querySelector('.image-stage[data-step-id="' + stepId + '"]');
+      if (!stage) return;
+      const mag = stage.querySelector('.magnifier');
+      if (mag) mag.remove();
+    }}
+
+    function updateMagnifier(stage) {{
+      const img = stage.querySelector('.step-main-img');
+      const mag = stage.querySelector('.magnifier');
+      if (!img || !mag) return;
+      const iw = img.naturalWidth || img.clientWidth || 1;
+      const ih = img.naturalHeight || img.clientHeight || 1;
+      const x = parseFloat(mag.dataset.x || String(iw / 2));
+      const y = parseFloat(mag.dataset.y || String(ih / 2));
+      const stageRect = stage.getBoundingClientRect();
+      const imgRect = img.getBoundingClientRect();
+      const imgLeft = imgRect.left - stageRect.left;
+      const imgTop = imgRect.top - stageRect.top;
+      const imageX = Math.max(0, Math.min(imgRect.width, (x / iw) * imgRect.width));
+      const imageY = Math.max(0, Math.min(imgRect.height, (y / ih) * imgRect.height));
+      const displayX = imgLeft + imageX;
+      const displayY = imgTop + imageY;
+      const magW = mag.offsetWidth || 168;
+      const magH = mag.offsetHeight || 168;
+      const bgX = (magW / 2) - (imageX * MAGNIFIER_ZOOM);
+      const bgY = (magH / 2) - (imageY * MAGNIFIER_ZOOM);
+      mag.style.left = displayX + 'px';
+      mag.style.top = displayY + 'px';
+      mag.style.backgroundImage = 'url("' + img.src + '")';
+      mag.style.backgroundSize = (imgRect.width * MAGNIFIER_ZOOM) + 'px ' + (imgRect.height * MAGNIFIER_ZOOM) + 'px';
+      mag.style.backgroundPosition = bgX + 'px ' + bgY + 'px';
+    }}
+
+    function bindMagnifier(stage, mag) {{
+      if (mag.dataset.bound === '1') return;
+      mag.dataset.bound = '1';
+      function moveTo(clientX, clientY) {{
+        const img = stage.querySelector('.step-main-img');
+        const rect = img ? img.getBoundingClientRect() : stage.getBoundingClientRect();
+        const iw = img ? (img.naturalWidth || rect.width || 1) : 1;
+        const ih = img ? (img.naturalHeight || rect.height || 1) : 1;
+        const x = Math.max(0, Math.min(iw, ((clientX - rect.left) / rect.width) * iw));
+        const y = Math.max(0, Math.min(ih, ((clientY - rect.top) / rect.height) * ih));
+        mag.dataset.x = x.toFixed(2);
+        mag.dataset.y = y.toFixed(2);
+        updateMagnifier(stage);
+      }}
+      mag.addEventListener('pointerdown', ev => {{
+        ev.preventDefault();
+        mag.setPointerCapture(ev.pointerId);
+        moveTo(ev.clientX, ev.clientY);
+        const onMove = e => moveTo(e.clientX, e.clientY);
+        const onUp = () => {{
+          mag.removeEventListener('pointermove', onMove);
+          mag.removeEventListener('pointerup', onUp);
+        }};
+        mag.addEventListener('pointermove', onMove);
+        mag.addEventListener('pointerup', onUp);
+      }});
+    }}
+
+    function initMagnifiers() {{
+      document.querySelectorAll('.image-stage').forEach(stage => {{
+        const img = stage.querySelector('.step-main-img');
+        const mag = stage.querySelector('.magnifier');
+        if (!img) return;
+        const refresh = () => updateMagnifier(stage);
+        img.addEventListener('load', refresh);
+        if (mag) bindMagnifier(stage, mag);
+        refresh();
+      }});
     }}
 
     function downloadHTML() {{
@@ -421,6 +588,8 @@ def export_html(tutorial_output_dir: Path, session_id: str = "") -> Path:
       a.download = {json.dumps(title.replace(" ", "_") + ".html")};
       a.click();
     }}
+
+    initMagnifiers();
   </script>
 </body>
 </html>"""
